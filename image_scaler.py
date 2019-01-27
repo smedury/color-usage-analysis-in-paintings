@@ -21,4 +21,4 @@ for ix, row in tqdm(data.iterrows()):
     res = cv2.resize(image, dsize=(int(image_width), int(image_height)), interpolation=cv2.INTER_CUBIC)
     cv2.imwrite('{}/{}.jpg'.format(IMAGE_RESHAPED, row.title), res)
 
-print('Doe')
+print('Done')
