@@ -48,15 +48,6 @@ hsv_df = pd.DataFrame(hsv, columns=['h', 's', 'v'])
 hsv_rounded_df = hsv_df.round(2)
 hsv_rounded_df.columns = ['h_rounded', 's_rounded', 'v_rounded']
 
-'''
-scaler = MinMaxScaler((0, 1))
-hsv_rounded_df['h_norm'] = scaler.fit_transform(hsv_df['h'].values.reshape(-1, 1))
-hsv_rounded_df['s_norm'] = scaler.fit_transform(hsv_df['s'].values.reshape(-1, 1))
-hsv_rounded_df['v_norm'] = scaler.fit_transform(hsv_df['v'].values.reshape(-1, 1))
-
-hsv_df['mul'] = hsv_df['h_norm'] * 10 + hsv_df['v_norm'] + hsv_df['s_norm'] * 5
-'''
-
 hsv_df = pd.concat([hsv_df, hsv_rounded_df], axis=1)
 sorted_hsv = hsv_df.sort_values(['h_rounded', 'v_rounded', 's_rounded'], ascending=[True, False, True])[
     ['h', 's', 'v']].values
