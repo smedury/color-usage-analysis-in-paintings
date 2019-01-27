@@ -9,12 +9,14 @@ from constants import *
 from utils import *
 import matplotlib
 from sklearn.decomposition import PCA
+import math
+import colorsys
 
 #   Cluster colors
-img = load_image('{}/circumcision.jpg'.format(IMAGE_RESHAPED))
+img = load_image('{}/ocean greyness.jpg'.format(IMAGE_RESHAPED))
 reshaped = img.reshape((-1, 3)) / 255
 
-kmeans = KMeans(n_clusters=40, verbose=3)
+kmeans = KMeans(n_clusters=10, verbose=3)
 kmeans.fit(reshaped)
 cluster_colors = kmeans.cluster_centers_ * 256
 cluster_colors = cluster_colors.astype(np.int)
@@ -27,7 +29,7 @@ df.columns = ['points', 'count']
 
 #   Scale the numbers
 total_pixels = np.sum(df['count'].values)
-colors_proportions = df['count'].values / total_pixels * 100*100
+colors_proportions = df['count'].values / total_pixels * 100 * 100
 colors_proportions = colors_proportions.astype(np.int)
 print(colors_proportions)
 
@@ -38,18 +40,28 @@ for idx, c in enumerate(cluster_colors):
         image_row = tmp_arr
     else:
         image_row = np.concatenate((image_row, tmp_arr), axis=0)
-
+cv2.imwrite('tmp2.jpg', np.repeat([image_row], 500, axis=0))
 #   Repeat the row for CLUSTER_CHART_WIDTH times
+
 hsv = matplotlib.colors.rgb_to_hsv(image_row)
-hsv_df = pd.DataFrame(hsv, columns=['h','s','v'])
+hsv_df = pd.DataFrame(hsv, columns=['h', 's', 'v'])
 hsv_rounded_df = hsv_df.round(2)
 hsv_rounded_df.columns = ['h_rounded', 's_rounded', 'v_rounded']
 
-hsv_df = pd.concat([hsv_df, hsv_rounded_df], axis=1)
+'''
+scaler = MinMaxScaler((0, 1))
+hsv_rounded_df['h_norm'] = scaler.fit_transform(hsv_df['h'].values.reshape(-1, 1))
+hsv_rounded_df['s_norm'] = scaler.fit_transform(hsv_df['s'].values.reshape(-1, 1))
+hsv_rounded_df['v_norm'] = scaler.fit_transform(hsv_df['v'].values.reshape(-1, 1))
 
-sorted_hsv = hsv_df.sort_values(['h_rounded','s_rounded','v_rounded'], ascending=[True,False,True])[['h','s','v']].values
+hsv_df['mul'] = hsv_df['h_norm'] * 10 + hsv_df['v_norm'] + hsv_df['s_norm'] * 5
+'''
+
+hsv_df = pd.concat([hsv_df, hsv_rounded_df], axis=1)
+sorted_hsv = hsv_df.sort_values(['h_rounded', 'v_rounded', 's_rounded'], ascending=[True, False, True])[
+    ['h', 's', 'v']].values
 
 rgb = matplotlib.colors.hsv_to_rgb(sorted_hsv)
 
-cv2.imwrite('tmp2.jpg',np.repeat([rgb],500,axis=0))
+cv2.imwrite('tmp2.jpg', np.repeat([rgb], 500, axis=0))
 print('Done')
