@@ -74,4 +74,4 @@ for idx, row in data.iterrows():
     else:
         stacked_images = np.concatenate((stacked_images, reshaped))
 
-cluster_colors_rgb(stacked_images, 20)
+cluster_colors_rgb(stacked_images, 100)
