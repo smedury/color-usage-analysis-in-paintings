@@ -13,46 +13,65 @@ import math
 import colorsys
 
 #   Cluster colors
-img = load_image('{}/ocean greyness.jpg'.format(IMAGE_RESHAPED))
-reshaped = img.reshape((-1, 3)) / 255
 
-kmeans = KMeans(n_clusters=10, verbose=3)
-kmeans.fit(reshaped)
-cluster_colors = kmeans.cluster_centers_ * 256
-cluster_colors = cluster_colors.astype(np.int)
+def cluster_colors_rgb(pixel_matrix, n_clusters=10):
 
-df = pd.DataFrame()
-df['points'] = kmeans.labels_
+    #   Scale RGB colors
+    scale_colors = pixel_matrix / 255
 
-df = df.groupby(by=['points'])['points'].count().rename().reset_index()
-df.columns = ['points', 'count']
+    #   Create kmeans, fit and rescale colors
+    kmeans = KMeans(n_clusters=n_clusters, verbose=3)
+    kmeans.fit(scale_colors)
+    cluster_colors = kmeans.cluster_centers_ * 255
+    cluster_colors = cluster_colors.astype(np.int)
 
-#   Scale the numbers
-total_pixels = np.sum(df['count'].values)
-colors_proportions = df['count'].values / total_pixels * 100 * 100
-colors_proportions = colors_proportions.astype(np.int)
-print(colors_proportions)
+    df = pd.DataFrame()
+    df['points'] = kmeans.labels_
 
-image_row = None
-for idx, c in enumerate(cluster_colors):
-    tmp_arr = np.repeat([c], colors_proportions[idx], axis=0)
-    if image_row is None:
-        image_row = tmp_arr
+    df = df.groupby(by=['points'])['points'].count().rename().reset_index()
+    df.columns = ['points', 'count']
+
+    #   Scale color size extracting the percentage
+    total_pixels = np.sum(df['count'].values)
+    colors_proportions = df['count'].values / total_pixels * 100 * 100
+    colors_proportions = colors_proportions.astype(np.int)
+    print(colors_proportions)
+
+    # Generate colors image
+    image_row = None
+    for idx, c in enumerate(cluster_colors):
+        tmp_arr = np.repeat([c], colors_proportions[idx], axis=0)
+        if image_row is None:
+            image_row = tmp_arr
+        else:
+            image_row = np.concatenate((image_row, tmp_arr), axis=0)
+    cv2.imwrite('tmp2.jpg', np.repeat([image_row], 500, axis=0))
+    #   Repeat the row for CLUSTER_CHART_WIDTH times
+
+    #   Sort colors by HSV
+    hsv = matplotlib.colors.rgb_to_hsv(image_row)
+    hsv_df = pd.DataFrame(hsv, columns=['h', 's', 'v'])
+    hsv_rounded_df = hsv_df.round(2)
+    hsv_rounded_df.columns = ['h_rounded', 's_rounded', 'v_rounded']
+
+    hsv_df = pd.concat([hsv_df, hsv_rounded_df], axis=1)
+    sorted_hsv = hsv_df.sort_values(['h_rounded', 'v_rounded', 's_rounded'], ascending=[True, True, True])[
+        ['h', 's', 'v']].values
+
+    rgb = matplotlib.colors.hsv_to_rgb(sorted_hsv)
+
+    cv2.imwrite('tmp2.jpg', np.repeat([rgb], 500, axis=0))
+    print('Done')
+
+data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
+
+stacked_images = None
+for idx, row in data.iterrows():
+    img = load_image('{}/{}.jpg'.format(IMAGE_RESHAPED, row.title))
+    reshaped = img.reshape((-1, 3))
+    if stacked_images is None:
+        stacked_images = reshaped
     else:
-        image_row = np.concatenate((image_row, tmp_arr), axis=0)
-cv2.imwrite('tmp2.jpg', np.repeat([image_row], 500, axis=0))
-#   Repeat the row for CLUSTER_CHART_WIDTH times
+        stacked_images = np.concatenate((stacked_images, reshaped))
 
-hsv = matplotlib.colors.rgb_to_hsv(image_row)
-hsv_df = pd.DataFrame(hsv, columns=['h', 's', 'v'])
-hsv_rounded_df = hsv_df.round(2)
-hsv_rounded_df.columns = ['h_rounded', 's_rounded', 'v_rounded']
-
-hsv_df = pd.concat([hsv_df, hsv_rounded_df], axis=1)
-sorted_hsv = hsv_df.sort_values(['h_rounded', 'v_rounded', 's_rounded'], ascending=[True, False, True])[
-    ['h', 's', 'v']].values
-
-rgb = matplotlib.colors.hsv_to_rgb(sorted_hsv)
-
-cv2.imwrite('tmp2.jpg', np.repeat([rgb], 500, axis=0))
-print('Done')
+cluster_colors_rgb(stacked_images, 20)
