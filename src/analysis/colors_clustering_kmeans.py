@@ -1,4 +1,4 @@
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from constants import *
 import pandas as pd
 import numpy as np
@@ -11,11 +11,13 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from tqdm import tqdm
 
+
 def cluster_colors_rgb(pixel_matrix, n_clusters=10, filename='tmp.jpg'):
     #   Scale RGB colors
     pixel_matrix = preprocessing.preprocess_pixel_matrix(pixel_matrix)
     #   Create clust, fit and rescale colors
     clust = KMeans(n_clusters=n_clusters, verbose=3)
+
     fig, ax = plt.subplots(nrows=1, ncols=1)  # create figure & 1 axis
 
     '''
@@ -41,7 +43,7 @@ def cluster_colors_rgb(pixel_matrix, n_clusters=10, filename='tmp.jpg'):
     clust.fit(pixel_matrix)
 
     cluster_centers = clust.cluster_centers_
-    cluster_centers_rgb = cluster_centers*255
+    cluster_centers_rgb = cluster_centers * 255
     cluster_centers_hsv = matplotlib.colors.rgb_to_hsv(cluster_centers)
 
     clusters_centers_df = pd.DataFrame()
@@ -79,7 +81,7 @@ def generate_color_scheme_images(pixel_matrix, clust, filename):
 
     cluster_centers = clust.cluster_centers_
 
-    cluster_centers_rgb = cluster_centers*255
+    cluster_centers_rgb = cluster_centers * 255
     cluster_centers_hsv = matplotlib.colors.rgb_to_hsv(cluster_centers)
 
     clusters_centers_df = pd.DataFrame()
@@ -118,7 +120,7 @@ def generate_clustered_images(image, pixel_matrix, clust, filename):
     clusters = clust.predict(pixel_matrix)
 
     cluster_centers = clust.cluster_centers_
-    cluster_centers_rgb = cluster_centers*255
+    cluster_centers_rgb = cluster_centers * 255
     cluster_centers_hsv = matplotlib.colors.rgb_to_hsv(cluster_centers)
 
     clusters_centers_df = pd.DataFrame()
@@ -139,6 +141,7 @@ def generate_clustered_images(image, pixel_matrix, clust, filename):
 
     visualization.image_to_clustered_colors(image, clusters, clusters_centers_df, filename)
     print('Done')
+
 
 preprocessing.resize_images()
 data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
