@@ -1,17 +1,17 @@
 from constants import *
 from src.visualization.visualization import *
-
+from src.commons import utils
 
 def preprocess_pixel_matrix(pixel_matrix):
-    new_matrix = matplotlib.colors.rgb_to_hsv(pixel_matrix / 255)
+    new_matrix = pixel_matrix/255
     return new_matrix
 
-def resize_images(data):
+def resize_images():
     #   Data with sizes etc
-    #   data = pd.read_csv('./data/data.csv', quotechar='"')
+    data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER), quotechar='"')
 
     for ix, row in tqdm(data.iterrows()):
-        image = load_image('{}/{}.jpg'.format(IMAGE_FOLDER, row.title))
+        image = utils.load_image('{}/{}.jpg'.format(IMAGE_FOLDER, row.title))
         #   Reshape image according to what's in the data
         image_width = row.width_cm * SCALE_FACTOR
         image_height = row.height_cm * SCALE_FACTOR
