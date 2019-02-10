@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 def load_image(filename):
     img = cv2.imread(filename)
+    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
     return img
 
 

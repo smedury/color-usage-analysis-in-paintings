@@ -8,7 +8,7 @@ from colormath.color_diff import delta_e_cie1976, delta_e_cie2000
 from skimage import io, color
 from tqdm import tqdm
 from scipy.sparse import coo_matrix, vstack
-
+import scipy.misc
 
 def draw_colors(df_points, clusters_centers_df, filename):
     #   Scale color size extracting the percentage
@@ -29,7 +29,7 @@ def draw_colors(df_points, clusters_centers_df, filename):
 
     rgb = matplotlib.colors.hsv_to_rgb(sorted_hsv)
 
-    cv2.imwrite(filename, np.repeat([rgb * 255], 500, axis=0))
+    scipy.misc.imsave(filename, np.repeat([rgb * 255], 500, axis=0))
 
 
 def image_to_clustered_colors(image, clustering_results, clusters_centers, filename):
@@ -41,6 +41,33 @@ def image_to_clustered_colors(image, clustering_results, clusters_centers, filen
         by=['index_x'])[['R', 'G', 'B']].values
 
     new_image = np.reshape(new_image, shape)
-    cv2.imwrite(filename, new_image)
+    scipy.misc.imsave(filename, new_image)
 
     print('Done')
+
+
+'''
+image_df = pd.DataFrame((pixel_matrix * 255).astype(np.int))
+image_df['label'] = clust.labels_
+image_df = image_df.loc[image_df['label'] == 3, [0, 1, 2]]
+
+side = np.int(np.ceil(np.sqrt(image_df.shape[0])))
+
+c = 0
+matrix = None
+for i in tqdm(range(0, side)):
+    columns = np.zeros(side)
+    for j in range(0, side):
+        tmp_color = [255, 255, 255]
+        if c < image_df.shape[0]:
+            tmp_color = image_df.values[c]
+
+        if matrix is None:
+            matrix = [tmp_color]
+        else:
+            matrix = np.append(matrix, [tmp_color], axis=0)
+
+        c += 1
+matrix = matrix.reshape((side, side, 3))
+matrix = scipy.misc.imresize(matrix,(500, 500), interp='nearest')
+'''

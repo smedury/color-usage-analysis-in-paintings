@@ -10,36 +10,14 @@ from spherecluster import SphericalKMeans
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from tqdm import tqdm
-
+from mpl_toolkits.mplot3d import Axes3D
+import scipy.misc
 
 def cluster_colors_rgb(pixel_matrix, n_clusters=10, filename='tmp.jpg'):
     #   Scale RGB colors
     pixel_matrix = preprocessing.preprocess_pixel_matrix(pixel_matrix)
     #   Create clust, fit and rescale colors
-    clust = KMeans(n_clusters=n_clusters, verbose=3)
-
-    fig, ax = plt.subplots(nrows=1, ncols=1)  # create figure & 1 axis
-
-    '''
-    # k means determine k
-    distortions = []
-    K = range(2, 60)
-    for k in tqdm(K):
-        kmeanModel = KMeans(n_clusters=k).fit(pixel_matrix)
-        kmeanModel.fit(pixel_matrix)
-        distortions.append(sum(np.min(cdist(pixel_matrix, kmeanModel.cluster_centers_, 'euclidean'), axis=1)) / pixel_matrix.shape[0])
-
-    # Plot the elbow
-    ax.plot(K, distortions, 'bx-')
-    plt.xlabel('k')
-    plt.ylabel('Distortion')
-    plt.title('The Elbow Method showing the optimal k')
-    fig.savefig('{}/elbow.jpg'.format(OUTPUT_FOLDER))  # save the figure to file
-    plt.close(fig)  # close the figure
-    plt.show()
-    # clust = DBSCAN(metric=cie00_distance, n_jobs=4)
-    #clust = SphericalKMeans(n_clusters=n_clusters, verbose=3)
-    '''
+    clust = KMeans(n_clusters=n_clusters, verbose=3, random_state=999)
     clust.fit(pixel_matrix)
 
     cluster_centers = clust.cluster_centers_
@@ -68,7 +46,7 @@ def cluster_colors_rgb(pixel_matrix, n_clusters=10, filename='tmp.jpg'):
     df.columns = ['points', 'count']
     visualization.draw_colors(df, clusters_centers_df, filename)
 
-    color_scheme = pd.DataFrame(cluster_centers_rgb, columns=['R', 'G', 'B'])
+    color_scheme = pd.DataFrame(clusters_centers_df, columns=['R', 'G', 'B', 'H', 'S', 'V'])
     color_scheme.to_csv('{}/color_scheme.csv'.format(OUTPUT_FOLDER))
 
     return clust
@@ -82,7 +60,7 @@ def generate_color_scheme_images(pixel_matrix, clust, filename):
     cluster_centers = clust.cluster_centers_
 
     cluster_centers_rgb = cluster_centers * 255
-    cluster_centers_hsv = matplotlib.colors.rgb_to_hsv(cluster_centers)
+    cluster_centers_hsv = matplotlib.colors.bgr_to_hsv(cluster_centers)
 
     clusters_centers_df = pd.DataFrame()
 
@@ -121,7 +99,7 @@ def generate_clustered_images(image, pixel_matrix, clust, filename):
 
     cluster_centers = clust.cluster_centers_
     cluster_centers_rgb = cluster_centers * 255
-    cluster_centers_hsv = matplotlib.colors.rgb_to_hsv(cluster_centers)
+    cluster_centers_hsv = matplotlib.colors.bgr_to_hsv(cluster_centers)
 
     clusters_centers_df = pd.DataFrame()
 
@@ -143,8 +121,9 @@ def generate_clustered_images(image, pixel_matrix, clust, filename):
     print('Done')
 
 
-preprocessing.resize_images()
 data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
+
+preprocessing.resize_images(data, size=(200,200))
 N_CLUSTERS = 20
 
 #   Stack images
@@ -156,6 +135,7 @@ for idx, row in data.iterrows():
 
     if stacked_images is None:
         stacked_images = reshaped
+        break
     else:
         stacked_images = np.concatenate((stacked_images, reshaped))
 
@@ -174,6 +154,15 @@ for year in data['year'].unique():
         else:
             stacked_images = np.concatenate((stacked_images, reshaped))
     generate_color_scheme_images(stacked_images, fitted_model, filename='{}/colors_{}'.format(OUTPUT_FOLDER, year))
+
+#   Predict clusters
+for idx, row in data.iterrows():
+    stacked_images = None
+    img = utils.load_image('{}/{}.jpg'.format(IMAGE_RESHAPED, row.title))
+    reshaped = img.reshape((-1, 3))
+
+    generate_color_scheme_images(reshaped, fitted_model,
+                                 filename='{}/images_schemes/{}'.format(OUTPUT_FOLDER, row.title))
 
 for idx, row in data.iterrows():
     img = utils.load_image('{}/{}.jpg'.format(IMAGE_RESHAPED, row.title))
