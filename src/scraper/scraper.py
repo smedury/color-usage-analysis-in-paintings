@@ -3,12 +3,8 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 import pandas as pd
 import scrapy
-import sys
-sys.path.append(".")
 from src.constants import *
 #from scrapy.xlib.pydispatch import dispatcher
-
-
 class MyItem(scrapy.Item):
     # ... other item fields ...
     image_urls = scrapy.Field()
@@ -20,11 +16,10 @@ class BlogSpider(scrapy.Spider):
 
     years = []
     titles = []
-    '''
     custom_settings = {
-        "DOWNLOAD_DELAY": 1,
+        "DOWNLOAD_DELAY": 2,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 10
-    }'''
+    }
 
     def start_requests(self):
         #dispatcher.connect(self.spider_closed, signals.spider_closed)
@@ -60,23 +55,17 @@ class BlogSpider(scrapy.Spider):
         #   Extract the image using the custom pipeline and write a file with all other info
         yield {'image_urls': [image], 'titles':[title]}
 
-    #def spider_closed(self):
-    def closed(self,spider):
+    def closed(self, reason):
         df = pd.DataFrame()
         df['year'] = self.years
         df['title'] = self.titles
         df.to_csv('{}/data.csv'.format(DATA_FOLDER),index=False)
-        return
 
 process = CrawlerProcess({
-    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
-    , "BOT_NAME": 'imagespider'
-    , "ITEM_PIPELINES": {
-        'custom_image_pipeline.CustomImagesPipeline': 1,
-    }
-    , "IMAGES_STORE": '{}/images'.format(DATA_FOLDER)
-})
-
-process.crawl(BlogSpider)
-process.start()  # the script will block here until the crawling is finished
-print('hello')
+      'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+      , "BOT_NAME": 'imagespider'
+      , "ITEM_PIPELINES": {
+          'src.scraper.custom_image_pipeline.CustomImagesPipeline': 1,
+      }
+      , "IMAGES_STORE": '{}/images'.format(DATA_FOLDER)
+  })

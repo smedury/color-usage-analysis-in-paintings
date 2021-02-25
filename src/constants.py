@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 SCALE_FACTOR = 1

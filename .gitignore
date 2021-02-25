@@ -118,5 +118,5 @@ dmypy.json
 # Idea
 .idea/
 
-data/**
-./data/
+*data*
+*.vscode*

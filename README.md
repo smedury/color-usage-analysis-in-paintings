@@ -19,20 +19,11 @@ cd color-usage-analysis-in-paintings
 pip3 install -r requirements.txt
 ```
 
-Run the scraper module to gather images:
+Run the following command to:
+- gather images using scraper module 
+- analyze color usage using K-Means clustering
+- gather colors proportions per year analysis:
 
 ```console
-python3 src/scraper/scraper.py
-```
-
-Run the K-means clustering analysis using the following command:
-
-```console
-python3 src/analysis/colors_clustering_kmeans.py
-```
-
-To gather colors proportions per year analysis:
-
-```console
-python3 src/analysis/occurences_per_year.py
+python3 main.py
 ```
