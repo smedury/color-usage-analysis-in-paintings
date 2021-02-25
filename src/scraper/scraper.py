@@ -3,7 +3,10 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 import pandas as pd
 import scrapy
-from scrapy.xlib.pydispatch import dispatcher
+import sys
+sys.path.append(".")
+from src.constants import *
+#from scrapy.xlib.pydispatch import dispatcher
 
 
 class MyItem(scrapy.Item):
@@ -21,11 +24,10 @@ class BlogSpider(scrapy.Spider):
     custom_settings = {
         "DOWNLOAD_DELAY": 1,
         "CONCURRENT_REQUESTS_PER_DOMAIN": 10
-    }
-    '''
+    }'''
 
     def start_requests(self):
-        dispatcher.connect(self.spider_closed, signals.spider_closed)
+        #dispatcher.connect(self.spider_closed, signals.spider_closed)
 
         urls = [
             'https://www.jackson-pollock.org/jackson-pollock-paintings.jsp',
@@ -58,12 +60,12 @@ class BlogSpider(scrapy.Spider):
         #   Extract the image using the custom pipeline and write a file with all other info
         yield {'image_urls': [image], 'titles':[title]}
 
-    def spider_closed(self, spider):
+    #def spider_closed(self):
+    def closed(self,spider):
         df = pd.DataFrame()
         df['year'] = self.years
         df['title'] = self.titles
-
-        df.to_csv('./data/data.csv',index=False)
+        df.to_csv('{}/data.csv'.format(DATA_FOLDER),index=False)
         return
 
 process = CrawlerProcess({
@@ -72,7 +74,7 @@ process = CrawlerProcess({
     , "ITEM_PIPELINES": {
         'custom_image_pipeline.CustomImagesPipeline': 1,
     }
-    , "IMAGES_STORE": "C:\\Users\\Andrea\\PycharmProjects\\pollock-analysis\\data\\images"
+    , "IMAGES_STORE": '{}/images'.format(DATA_FOLDER)
 })
 
 process.crawl(BlogSpider)

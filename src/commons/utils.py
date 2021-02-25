@@ -1,13 +1,13 @@
-import cv2
 from colormath.color_objects import LabColor, sRGBColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
+from skimage import io
 from tqdm import tqdm
 
 
 def load_image(filename):
-    img = cv2.imread(filename)
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    #img = skimage.io.imread(filename)
+    img = io.imread(filename)
     return img
 
 
