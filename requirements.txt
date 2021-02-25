@@ -10,4 +10,3 @@ scikit_image==0.18.1
 opencv_python==4.5.1.48
 auto_mix_prep==0.2.0
 scikit_learn==0.24.1
-skimage==0.0
