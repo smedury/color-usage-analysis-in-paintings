@@ -13,9 +13,6 @@ from skimage import io, color
 import skimage
 from tqdm import tqdm
 from scipy.sparse import coo_matrix, vstack
-import colorsys
-import scipy.misc
-import pickle
 
 def draw_colors(df_points, clusters_centers_df, filename):
     #   Scale color size extracting the percentage

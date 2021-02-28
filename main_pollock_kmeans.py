@@ -4,25 +4,22 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 from src.analysis.occurences_per_year import occurences_per_year
 from src.commons.utils import *
-from src.scraper.scraper import *
 import src.scraper.custom_image_pipeline as custom_image_pipeline
 from src.preprocessing import preprocessing
 from src.visualization import visualization
 from src.analysis.colors_clustering_kmeans import *
 from src.analysis.occurences_per_year import *
 
-from src.scraper.scraper import *
+from src.scraper.scraper_pollock import *
 import numpy as np
 import pandas as pd
 from src.constants import *
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from pathlib import Path
-from pydispatch import dispatcher
-
 
 if __name__ == "__main__":
 
-    process.crawl(BlogSpider)
+    process.crawl(PaintingsSpider)
     process.start()  # the script will block here until the crawling is finished
     print('hello')
 

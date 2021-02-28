@@ -4,15 +4,16 @@ from scrapy.crawler import CrawlerProcess
 import pandas as pd
 import scrapy
 from src.constants import *
+import re
 #from scrapy.xlib.pydispatch import dispatcher
-class MyItem(scrapy.Item):
+class Paintings(scrapy.Item):
     # ... other item fields ...
     image_urls = scrapy.Field()
     images = scrapy.Field()
 
 
-class BlogSpider(scrapy.Spider):
-    name = "quotes"
+class PaintingsSpider(scrapy.Spider):
+    name = "paintings"
 
     years = []
     titles = []
@@ -22,7 +23,6 @@ class BlogSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        #dispatcher.connect(self.spider_closed, signals.spider_closed)
 
         urls = [
             'https://www.jackson-pollock.org/jackson-pollock-paintings.jsp',
@@ -42,6 +42,7 @@ class BlogSpider(scrapy.Spider):
 
     def extractData(self, response):
         print(response)
+
         image = 'https://www.jackson-pollock.org' + response.css('table img').xpath('@src').extract()[0]
         #   Get the title and the year
         title_full = response.css('h1::text').extract()[1].strip().lower()
@@ -51,7 +52,7 @@ class BlogSpider(scrapy.Spider):
 
         self.years.append(year)
         self.titles.append(title)
-
+        
         #   Extract the image using the custom pipeline and write a file with all other info
         yield {'image_urls': [image], 'titles':[title]}
 
