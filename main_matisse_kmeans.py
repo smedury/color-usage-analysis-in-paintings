@@ -1,4 +1,3 @@
-from src.visualization.stackplot import riverdiagram
 import skimage
 from tqdm import tqdm
 from scipy.spatial.distance import cdist
@@ -17,7 +16,6 @@ import pandas as pd
 from src.constants import *
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from pathlib import Path
-import src.visualization.stackplot
 
 if __name__ == "__main__":
 
@@ -83,6 +81,3 @@ if __name__ == "__main__":
                                   filename='{}/clustered_images/colors_{}.jpg'.format(OUTPUT_FOLDER, row.title))
 
     occurences_per_year()
-
-    riverdiagram()
-

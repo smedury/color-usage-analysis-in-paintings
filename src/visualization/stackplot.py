@@ -11,7 +11,7 @@ from webcolors import rgb_to_name
 
 from scipy.spatial import KDTree
 
-def riverdiagram():
+def riverdiagram(num_colors):
     images = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
     x=range(0,19)
     years_temp = images['year'].unique()
@@ -26,7 +26,7 @@ def riverdiagram():
         new_data = pd.read_csv('{}/years_proportions/{}.csv'.format(OUTPUT_FOLDER, year), names=['perc','R','G','B','H','S','V'], skiprows=[0])
         new_data_improved = new_data.apply(pd.to_numeric, args=('coerce',)).dropna()
         percentages = new_data_improved['perc'].astype('float')
-        all_data[year]=np.absolute(percentages.values[0:18])
+        all_data[year]=np.absolute(percentages.values[0:num_colors])
         if(len(colors)==0):
             colors_rgb = pd.DataFrame()
             colors_rgb['R'] = new_data['R'].astype(np.int16)

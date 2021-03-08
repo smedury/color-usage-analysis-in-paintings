@@ -23,7 +23,9 @@ pip3 install -r requirements.txt
 
 This project can analyse paintings of artists:
 - Jackson Pollock
-- Frida Kahlo 
+- Frida Kahlo
+- Mark Rothko 
+- Henri Matisse
 
 using kmeans clustering analysis.
 
@@ -53,6 +55,17 @@ python3 main_pollock_kmeans.py
 Output images can be found in folder named *data*, created in the project's root directory.
 
 Top 20 colors used by the artist are identified through clustering. And their proportions are determined per painting and per year.
+
+To generate a river diagram for color usage for an artist, run the following command. River diagram can be found inside the output folder with name: riverdiagram-totalcolors-usage.png
+
+```console
+python3 generate_river_diagram.py
+```
+__Note__: Modify the input parameter in generate_river_diagram.py to fix any errors encountered:
+
+```python
+line 22:    riverdiagram(<desired_number>)
+```
 
 ## Potential Issues and fixes
 
