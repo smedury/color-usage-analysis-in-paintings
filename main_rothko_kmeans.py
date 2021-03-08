@@ -11,7 +11,7 @@ from src.visualization import visualization
 from src.analysis.colors_clustering_kmeans import *
 from src.analysis.occurences_per_year import *
 
-from src.scraper.scraper_kahlo import *
+from src.scraper.scraper_rothko import *
 import numpy as np
 import pandas as pd
 from src.constants import *
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
 
     preprocessing.resize_images(data, size=(200,200))
-    N_CLUSTERS = 25
+    N_CLUSTERS = 20
 
     #   Stack images
     stacked_images = None

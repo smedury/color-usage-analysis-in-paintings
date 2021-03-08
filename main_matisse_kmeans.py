@@ -11,13 +11,13 @@ from src.visualization import visualization
 from src.analysis.colors_clustering_kmeans import *
 from src.analysis.occurences_per_year import *
 
-from src.scraper.scraper_kahlo import *
+from src.scraper.scraper_matisse import *
 import numpy as np
 import pandas as pd
 from src.constants import *
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from pathlib import Path
-from src.visualization.stackplot import *
+import src.visualization.stackplot
 
 if __name__ == "__main__":
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     data = pd.read_csv('{}/data.csv'.format(DATA_FOLDER))
 
     preprocessing.resize_images(data, size=(200,200))
-    N_CLUSTERS = 25
+    N_CLUSTERS = 20
 
     #   Stack images
     stacked_images = None
@@ -85,3 +85,4 @@ if __name__ == "__main__":
     occurences_per_year()
 
     riverdiagram()
+

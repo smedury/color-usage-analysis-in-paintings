@@ -1,3 +1,4 @@
+from src.visualization.stackplot import riverdiagram
 import skimage
 from tqdm import tqdm
 from scipy.spatial.distance import cdist
@@ -9,6 +10,7 @@ from src.preprocessing import preprocessing
 from src.visualization import visualization
 from src.analysis.colors_clustering_kmeans import *
 from src.analysis.occurences_per_year import *
+from src.visualization.stackplot import *
 
 from src.scraper.scraper_pollock import *
 import numpy as np
@@ -17,8 +19,7 @@ from src.constants import *
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from pathlib import Path
 
-if __name__ == "__main__":
-
+def somefunc():
     process.crawl(PaintingsSpider)
     process.start()  # the script will block here until the crawling is finished
     print('hello')
@@ -81,3 +82,6 @@ if __name__ == "__main__":
                                   filename='{}/clustered_images/colors_{}.jpg'.format(OUTPUT_FOLDER, row.title))
 
     occurences_per_year()
+
+if __name__ == "__main__":
+    riverdiagram()
