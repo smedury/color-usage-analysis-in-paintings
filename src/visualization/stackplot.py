@@ -36,6 +36,7 @@ def riverdiagram(num_colors):
             for (r,g,b) in zip(colors_rgb['R'],colors_rgb['G'],colors_rgb['B']):
                 colors.append('#%02x%02x%02x' % (r, g, b))
 
+    plt.figure(figsize=(8, 6))
     plt.stackplot(years,all_data.values,baseline='zero',colors=colors)
     #plt.show()
     plt.savefig('{}/riverdiagram-totalcolors-usage.png'.format(OUTPUT_FOLDER))
