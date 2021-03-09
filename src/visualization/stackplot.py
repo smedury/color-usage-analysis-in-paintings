@@ -17,7 +17,7 @@ def riverdiagram(num_colors):
     years_temp = images['year'].unique()
     years=[]
     for y in years_temp:
-        if(y is not np.NaN and y.isnumeric() and int(y)>1900 and int(y)<2021):
+        if(y is not np.NaN and str(y).isnumeric() and int(y)>1900 and int(y)<2021):
             years.append(y)
     years = sorted(years)
     colors=[]
